@@ -1,0 +1,49 @@
+#Reading the Data
+setwd("C:/Users/user/OneDrive/Desktop/Sparks/Task 1")
+data<-read.csv("student_scores - student_scores.csv")
+attach(data)
+print("Data imported successfully")
+head(data,10)
+
+#Data Visualization
+x=data$Hours
+y=data$Scores
+plot(x,y,xlab="Hours Studied",ylab="Percentage Score", main="Hours vs Percentage",
+     col="red",pch=20,cex=1.75)
+
+#Train Test Split
+set.seed(2021)
+index=sample(1:nrow(data),size=floor(0.8*nrow(data)))
+train.set=data[index,]
+test.set=data[-index,]
+
+#Model Training
+linear.model=lm(Scores~Hours,data=train.set)
+summary=summary(linear.model)
+print("Training complete.")
+
+#Plotting the line of Regression
+plot(x,y,xlab="Hours Studied",ylab="Percentage Score",main="Hours vs Percentage",
+     col="red",pch=20,cex=1.75)
+abline(linear.model,col="blue")
+
+#Making Predictions
+predicted=predict(linear.model, newdata=test.set,type="response")
+predicted
+
+actual=test.set[,2]
+data.frame(actual,predicted)
+
+hours=9.25
+predicted_score=predict(linear.model,data.frame(Hours=c(hours)))
+paste("Number of hours studied:",hours)
+paste("Predicted score is:",predicted_score)
+
+
+#Evaluating the Model
+test_mse=mean((actual-predicted)^2)
+test_rmse=sqrt(test_mse)
+test_mae=mean(abs(actual-predicted))
+paste("Mean Absolute Error:",test_mae)
+paste("Mean Squared Error:",test_mse)
+paste("Root Mean Squared Error:",test_rmse)
