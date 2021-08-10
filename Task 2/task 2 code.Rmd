@@ -1,0 +1,61 @@
+library(ggplot2)
+#importing dataset
+setwd("C:/Users/user/OneDrive/Desktop/Sparks/Task 2")
+data<-read.csv("iris.csv")
+attach(data)
+names(data)
+
+#data observation
+head(data,10)
+data<-data[,-1]
+head(data,5)
+str(data)
+summary(data)
+
+
+#Data Visualization
+ggplot(data,aes(x=SepalLengthCm,y=SepalWidthCm,col=Species))+
+  geom_point(size=2)+
+  xlab("Sepal Length (in cm)")+
+  ylab("Sepal Width (in cm)")+
+  ggtitle("Scatterplot of Sepal Length-Sepal Width")
+
+#Elbow Method for choosing no. of clusters
+iris_cl=data[,1:4]
+head(iris_cl)
+set.seed(2021)
+wss <-array(0)
+for (i in 1:15) {
+  km.out <- kmeans(iris_cl, centers = i, nstart = 10, iter.max = 300)
+  wss[i] <- km.out$tot.withinss
+}
+plot(1:15, wss, type = "b", 
+     xlab = "Number of Clusters", 
+     ylab = "Within Clusters Sum of Squares(WCSS)")
+
+#Visualizing the clusters
+kmeans.cl=kmeans(iris_cl,centers=3,nstart=10)
+kmeans.cl$cluster
+iris_cl$cluster <- as.character(kmeans.cl$cluster)
+head(iris_cl)
+ggplot(iris_cl,aes(x = SepalLengthCm, y =SepalWidthCm,colour=cluster)) +
+  geom_point(size=2)+
+  geom_point(aes(x=kmeans.cl$center[1,1],y=kmeans.cl$center[1,2]),
+  colour="purple",size=5,shape=19)+
+  geom_point(aes(x=kmeans.cl$center[2,1],y=kmeans.cl$center[2,2]),
+  colour="purple",size=5,shape=19)+
+    geom_point(aes(x=kmeans.cl$center[3,1],y=kmeans.cl$center[3,2]),
+  colour="purple",size=5,shape=19)+
+     geom_text(label="centroid 1",x=kmeans.cl$center[1,1],                        y=kmeans.cl$center[1,2],color = "black")+
+     geom_text(label="centroid 2",x=kmeans.cl$center[2,1],                        y=kmeans.cl$center[2,2],color = "black")+
+     geom_text(label="centroid 3",x=kmeans.cl$center[3,1],                        y=kmeans.cl$center[3,2],color = "black")+
+ scale_shape_discrete(labels = c("1(iris-setosa)", "2(iris-versicolor)","3(iris-virginica)"))+
+    scale_color_discrete(labels = c("1(iris-setosa)", "2(iris-versicolor)","3(iris-virginica)"))+
+      xlab("Sepal Length (in cm)")+
+  ylab("Sepal Width (in cm)")+
+  ggtitle("Visualization of k-means clustering")
+
+
+              
+
+
