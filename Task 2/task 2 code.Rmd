@@ -35,7 +35,6 @@ plot(1:15, wss, type = "b",
 
 #Visualizing the clusters
 kmeans.cl=kmeans(iris_cl,centers=3,nstart=10)
-kmeans.cl$cluster
 iris_cl$cluster <- as.character(kmeans.cl$cluster)
 head(iris_cl)
 ggplot(iris_cl,aes(x = SepalLengthCm, y =SepalWidthCm,colour=cluster)) +
