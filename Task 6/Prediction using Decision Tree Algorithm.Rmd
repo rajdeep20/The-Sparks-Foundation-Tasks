@@ -1,0 +1,49 @@
+library(rpart)
+library(rpart.plot)
+library(ggplot2)
+library(GGally)
+
+#importing dataset
+setwd("C:/Users/user/OneDrive/Desktop/Sparks/Task 2")
+data<-read.csv("iris.csv")
+attach(data)
+names(data)
+
+#data observation
+head(data,10)
+data<-data[,-1]
+head(data,5)
+str(data)
+summary(data)
+
+#Data Visualization
+ggpairs(data[,1:4],aes(col=Species))
+
+#train-test split
+set.seed(1)
+index=sample(1:nrow(data),floor(0.80*nrow(data)))
+train=data[index,]
+test=data[-index,]
+
+#Model Training
+tree.iris=rpart(as.factor(Species)~.,data=train,method="class")
+rpart.plot(tree.iris)
+opt<-which.min(tree.iris$cptable[,'xerror'])
+cp <-tree.iris$cptable[opt, 'CP']
+prune.tree<-prune(tree.iris,cp)
+rpart.plot(prune.tree)
+
+#Prediction on Test Data
+predicted_species=predict(prune.tree,test,type="class")
+actual_species=test$Species
+table(predicted_species,actual_species)
+
+#Model Accuracy
+accuracy=mean(predicted_species==actual_species)*100
+paste("Model Accuracy:",round(accuracy,2),"%")
+
+
+
+
+
+
